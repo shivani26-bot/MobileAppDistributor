@@ -1,7 +1,6 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {FRONTEND_URL} from '../../constant';
-// ✅ Login Action (Async Thunk)
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (userData, {rejectWithValue}) => {
@@ -33,11 +32,10 @@ export const loginUser = createAsyncThunk(
   },
 );
 
-// ✅ Authentication Slice
 const authLoginSlice = createSlice({
   name: 'auth',
   initialState: {token: null, loading: false, error: null},
-  reducers: {}, // No logout here since we use a separate slice
+  reducers: {},
   extraReducers: builder => {
     builder
       .addCase(loginUser.pending, state => {

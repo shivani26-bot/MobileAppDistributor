@@ -1,9 +1,9 @@
-import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect} from 'react';
-import AppCard from '../components/AppCard';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useEffect} from 'react';
+import {FlatList, StyleSheet, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
+import AppCard from '../components/AppCard';
 import {fetchAppList} from '../redux/features/getAppListSlice';
 
 export default function Application() {
