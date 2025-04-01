@@ -1,13 +1,34 @@
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
-import Login from './screens/AuthScreen';
+import RequireAuth from './components/RequireAuth';
+import Application from './screens/Application';
+import AuthScreen from './screens/AuthScreen';
+const Stack = createNativeStackNavigator();
 
-export default function App() {
+const App = () => {
   return (
-    <SafeAreaView style={{flex:1}}>
-      <Login/>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {backgroundColor: '#2979FF'}, 
+          headerTintColor: '#fff',
+        }}>
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen name="Application" options={{headerShown: false}}>
+          {() => (
+            <RequireAuth>
+              <Application />
+            </RequireAuth>
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
-}
+};
 
-const styles = StyleSheet.create({});
+export default App;
