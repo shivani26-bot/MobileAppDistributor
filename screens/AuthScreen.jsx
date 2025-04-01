@@ -10,12 +10,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {loginUser} from '../redux/features/authLoginSlice';
 
 export default function AuthScreen() {
   const [formData, setFormData] = useState({email: '', password: ''});
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   // Redux state
   const {
@@ -45,6 +47,7 @@ export default function AuthScreen() {
       await AsyncStorage.setItem('token', response.token);
 
       Alert.alert('Success', response.message);
+      navigation.navigate('Application');
       // Navigate after successful login if needed
     } catch (error) {
       console.error('Login Error:', error);
