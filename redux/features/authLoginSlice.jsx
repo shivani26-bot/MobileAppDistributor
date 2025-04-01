@@ -1,12 +1,12 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {FRONTEND_URL} from '../../constant';
 // ✅ Login Action (Async Thunk)
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (userData, {rejectWithValue}) => {
     try {
-      const response = await fetch('http://10.0.2.2:8000/api/user/login', {
+      const response = await fetch(`${FRONTEND_URL}/api/user/login`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userData),
