@@ -4,6 +4,9 @@ import React from 'react';
 import RequireAuth from './components/RequireAuth';
 import Application from './screens/Application';
 import AuthScreen from './screens/AuthScreen';
+import ProjectDetails from './screens/ProjectDetails';
+import {Image, TouchableOpacity} from 'react-native';
+import AppDeleteIcon from './components/AppDeleteIcon';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -26,6 +29,10 @@ const App = () => {
             </RequireAuth>
           )}
         </Stack.Screen>
+
+        {/* Releases or project details page */}
+
+        <Stack.Screen name="Project Details" component={ProjectDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
