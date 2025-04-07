@@ -1,4 +1,3 @@
-
 import {
   FlatList,
   Image,
@@ -13,14 +12,13 @@ import React, {useEffect, useState} from 'react';
 import AppCard from '../components/AppCard';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, {useEffect} from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
 
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import AppCard from '../components/AppCard';
 import {fetchAppList} from '../redux/features/getAppListSlice';
 import {useNavigation} from '@react-navigation/native';
+import Header from '../components/Header';
 
 export default function Application() {
   const navigation = useNavigation();
@@ -43,6 +41,7 @@ export default function Application() {
   const applicationList = useSelector(state => state.appList.items);
   return (
     <SafeAreaView style={styles.container}>
+      <Header />
       <View style={[styles.appContainer, styles.elevation]}>
         <FlatList
           style={styles.cardContainer}
@@ -85,6 +84,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#2979FF',
+    borderTopColor: '#000',
+    borderTopWidth: 2,
   },
   emptyBox: {
     width: 150,
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
 
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    marginTop: 80,
+    marginTop: 20,
     padding: 12,
   },
   cardContainer: {

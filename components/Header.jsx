@@ -77,9 +77,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    paddingTop: 20,
+    paddingLeft: 15,
+    paddingRight: 15,
+    // paddingTop: 20,
     backgroundColor: '#2979FF',
+    // borderTopColor: '#000',
+    // borderTopWidth: 2,
   },
   // title: {
   //   color: 'white',
@@ -94,6 +97,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     overflow: 'hidden',
+    // borderTopColor: '#000',
+    // borderTopWidth: 2,
   },
   icon: {
     width: '80%',
