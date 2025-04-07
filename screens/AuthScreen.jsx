@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -10,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {loginUser} from '../redux/features/authLoginSlice';
 
@@ -19,19 +19,16 @@ export default function AuthScreen() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  // Redux state
   const {
     loading: loginLoading,
     error: loginError,
     user,
   } = useSelector(state => state.authLogin);
 
-  // Handle input changes
   const handleChange = (key, value) => {
     setFormData(prev => ({...prev, [key]: value}));
   };
 
-  // Handle login
   const handleAuth = async () => {
     const {email, password} = formData;
 
@@ -43,23 +40,20 @@ export default function AuthScreen() {
     try {
       const response = await dispatch(loginUser({email, password})).unwrap();
 
-      console.log('Login Response:', response); // Debugging log
+      console.log('Login Response:', response);
       await AsyncStorage.setItem('token', response.token);
 
       Alert.alert('Success', response.message);
       navigation.navigate('Application');
-      // Navigate after successful login if needed
     } catch (error) {
       console.error('Login Error:', error);
       Alert.alert('Error', error.message || 'Something went wrong');
     }
   };
 
-  // Effect to navigate when user is set
   useEffect(() => {
     if (user) {
       console.log('User logged in:', user);
-      // Navigate to the main application screen if needed
     }
   }, [user]);
 
@@ -112,7 +106,9 @@ export default function AuthScreen() {
         </View>
 
         <Text style={styles.qusText}>Don't have an account?</Text>
-        <TouchableOpacity style={styles.getStartedButton}>
+        <TouchableOpacity
+          style={styles.getStartedButton}
+          onPress={() => navigation.navigate('Registration')}>
           <Text style={styles.buttonText}>Get Started</Text>
         </TouchableOpacity>
       </View>
