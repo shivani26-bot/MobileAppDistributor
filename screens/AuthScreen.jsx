@@ -3,7 +3,6 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -12,13 +11,23 @@ import {
   View,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
+import CustomModal from '../components/CustomModal';
 import {loginUser} from '../redux/features/authLoginSlice';
-
 export default function AuthScreen() {
   const [formData, setFormData] = useState({email: '', password: ''});
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const closedEye = require('../asset/images/hidden.png');
+  const openEye = require('../asset/images/eye.png');
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
+  const [modalContent, setModalContent] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    buttonText: '',
+    cancelButtonText: 'Cancel',
+  });
   const {
     loading: loginLoading,
     error: loginError,
@@ -33,7 +42,17 @@ export default function AuthScreen() {
     const {email, password} = formData;
 
     if (!email || !password) {
-      Alert.alert('Error', 'All fields are required');
+      // Alert.alert('Error', 'All fields are required');
+      setModalContent({
+        title: 'Error',
+        message: 'All fields are required',
+        buttonText: 'Ok',
+        onConfirm: () => {
+          setModalVisible(false);
+        },
+        cancelButtonText: '',
+      });
+      setModalVisible(true);
       return;
     }
 
@@ -43,11 +62,31 @@ export default function AuthScreen() {
       console.log('Login Response:', response);
       await AsyncStorage.setItem('token', response.token);
 
-      Alert.alert('Success', response.message);
+      // Alert.alert('Success', response.message);
+      setModalContent({
+        title: 'Success',
+        message: 'Login Successful',
+        buttonText: 'Ok',
+        onConfirm: () => {
+          setModalVisible(false);
+        },
+        cancelButtonText: '',
+      });
+      setModalVisible(true);
       navigation.navigate('Application');
     } catch (error) {
       console.error('Login Error:', error);
-      Alert.alert('Error', error.message || 'Something went wrong');
+      // Alert.alert('Error', error.message || 'Something went wrong');
+      setModalContent({
+        title: 'Error',
+        message: error.message || 'Something went wrong',
+        buttonText: 'Ok',
+        onConfirm: () => {
+          setModalVisible(false);
+        },
+        cancelButtonText: '',
+      });
+      setModalVisible(true);
     }
   };
 
@@ -57,62 +96,93 @@ export default function AuthScreen() {
     }
   }, [user]);
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.iconContainer}>
-          <Image
-            source={require('../asset/images/logo1.png')}
-            style={styles.icon}
+    <>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.iconContainer}>
+            <Image
+              source={require('../asset/images/logo1.png')}
+              style={styles.icon}
+            />
+          </View>
+        </View>
+        <View style={styles.card}>
+          <Text style={styles.heading}>App Distributor</Text>
+          <Text style={styles.title}>Login</Text>
+
+          <Text>User Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter the user email"
+            value={formData.email}
+            onChangeText={text => handleChange('email', text)}
+            keyboardType="email-address"
           />
+          <Text>Password</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter the Password"
+              value={formData.password}
+              onChangeText={text => handleChange('password', text)}
+              secureTextEntry={!isPasswordVisible}
+            />
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+              style={styles.eyeIconContainer}>
+              <Image
+                source={isPasswordVisible ? openEye : closedEye}
+                style={styles.eyeIcon}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleAuth}
+            disabled={loginLoading}>
+            {loginLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Sign in</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={styles.separatorContainer}>
+            <View style={styles.separator} />
+            <Text style={styles.orText}>or</Text>
+            <View style={styles.separator} />
+          </View>
+
+          <Text style={styles.qusText}>Don't have an account?</Text>
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={() => navigation.navigate('Registration')}>
+            <Text style={styles.buttonText}>Get Started</Text>
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.card}>
-        <Text style={styles.heading}>App Distributor</Text>
-        <Text style={styles.title}>Login</Text>
 
-        <Text>User Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter the user email"
-          value={formData.email}
-          onChangeText={text => handleChange('email', text)}
-          keyboardType="email-address"
+      {isModalVisible && (
+        <CustomModal
+          visible={isModalVisible}
+          onDismiss={() => setModalVisible(false)}
+          onConfirm={modalContent.onConfirm} // Pass the function to handle deletion
+          title={modalContent.title}
+          message={modalContent.message}
+          buttonText={modalContent.buttonText}
+          buttonStyle={{backgroundColor: '#3676F6', color: 'white'}}
+          buttonTextStyle={{color: 'white'}}
+          cancelButtonText={modalContent.cancelButtonText}
+          cancelButtonStyle={{backgroundColor: '#5D5D60', color: 'white'}}
         />
-        <Text>Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter the Password"
-          value={formData.password}
-          onChangeText={text => handleChange('password', text)}
-          secureTextEntry
-        />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleAuth}
-          disabled={loginLoading}>
-          {loginLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Sign in</Text>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.separatorContainer}>
-          <View style={styles.separator} />
-          <Text style={styles.orText}>or</Text>
-          <View style={styles.separator} />
-        </View>
-
-        <Text style={styles.qusText}>Don't have an account?</Text>
-        <TouchableOpacity
-          style={styles.getStartedButton}
-          onPress={() => navigation.navigate('Registration')}>
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      )}
+    </>
   );
 }
 
@@ -157,6 +227,22 @@ const styles = StyleSheet.create({
   icon: {
     width: 70,
     height: 70,
+  },
+  inputContainer: {
+    position: 'relative',
+    width: '100%',
+  },
+  eyeIconContainer: {
+    position: 'absolute',
+    right: 10,
+    top: '50%',
+    marginTop: -25,
+    padding: 10,
+    zIndex: 1,
+  },
+  eyeIcon: {
+    width: 25,
+    height: 20,
   },
   heading: {
     fontSize: 26,

@@ -1,18 +1,16 @@
-import {Alert, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {useDispatch} from 'react-redux';
+import AppCard from '../components/AppCard';
 import AppDeleteIcon from '../components/AppDeleteIcon';
+import CustomModal from '../components/CustomModal';
+import Release from '../components/Release';
 import {deleteApplication} from '../redux/features/deleteAppSlice';
 import {fetchAppList} from '../redux/features/getAppListSlice';
-import {useDispatch} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import CustomModal from '../components/CustomModal';
-import {NavigationContainer} from '@react-navigation/native';
-import AppCard from '../components/AppCard';
-import Release from '../components/Release';
 
-export default function ProjectDetails({route, navigation}) {
-  const {appData} = route.params;
-
+export default function ProjectDetails({ route, navigation }) {
+  const { appData } = route.params;
   const dispatch = useDispatch();
   console.log('data', appData);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -139,7 +137,7 @@ export default function ProjectDetails({route, navigation}) {
         </View>
 
         <View style={[styles.releaseContainer, styles.elevation]}>
-          <Release />
+          <Release appId={appData._id}  />
         </View>
       </View>
     </>

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import {useDispatch, useSelector} from 'react-redux';
 import {registerUser} from '../redux/features/authRegisterSlice';
 
@@ -18,8 +19,17 @@ export default function Registration() {
     name: '',
     email: '',
     password: '',
+    mobileNumber: '',
+    role: '',
   });
 
+  const [open, setOpen] = useState(false); // State for dropdown visibility
+  const [items, setItems] = useState([
+    {label: 'Associate Software', value: 'associate_software'},
+    {label: 'Client', value: 'client'},
+    {label: 'Admin', value: 'admin'},
+    {label: 'Agent', value: 'agent'},
+  ]);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const {loading, error} = useSelector(state => state.authRegister);
@@ -51,53 +61,61 @@ export default function Registration() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text>Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your User name"
-          value={formData.name}
-          onChangeText={text => handleChange('name', text)}
-        />
+    <>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text>Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your User name"
+            value={formData.name}
+            onChangeText={text => handleChange('name', text)}
+          />
 
-        <Text>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your email"
-          value={formData.email}
-          onChangeText={text => handleChange('email', text)}
-          keyboardType="email-address"
-        />
+          <Text>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            value={formData.email}
+            onChangeText={text => handleChange('email', text)}
+            keyboardType="email-address"
+          />
 
-       
-        <Text>Mobile Number</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Mobile number"
-          value={formData.email}
-          onChangeText={text => handleChange('email', text)}
-        />
-         <Text>Role</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Role"
-          value={formData.password}
-          onChangeText={text => handleChange('password', text)}
-          secureTextEntry
-        />
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleRegister}
-          disabled={loading}>
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Register</Text>
-          )}
-        </TouchableOpacity>
+          <Text>Mobile Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your Mobile number"
+            value={formData.mobileNumber}
+            onChangeText={text => handleChange('mobileNumber', text)}
+          />
+
+          <Text>Role</Text>
+          <DropDownPicker
+            open={open}
+            value={formData.role}
+            items={items}
+            setOpen={setOpen}
+            setValue={value => handleChange('role', value)}
+            setItems={setItems}
+            placeholder="Select a role"
+            containerStyle={styles.dropdownContainer}
+            style={styles.dropdown}
+            dropDownStyle={styles.dropdownOptions}
+          />
+
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleRegister}
+            disabled={loading}>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Register</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -139,6 +157,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: '#f9f9f9',
   },
+  dropdownContainer: {
+    marginBottom: 15,
+  },
+  dropdown: {
+    backgroundColor: '#f9f9f9',
+  },
+  dropdownOptions: {
+    backgroundColor: '#f9f9f9',
+  },
   button: {
     backgroundColor: '#2979FF',
     paddingVertical: 14,
@@ -146,6 +173,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     marginBottom: 15,
+    marginTop: 15,
   },
   buttonText: {
     color: '#fff',
