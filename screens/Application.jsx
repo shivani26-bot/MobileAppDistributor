@@ -9,10 +9,7 @@ import {
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import AppCard from '../components/AppCard';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 import AppCard from '../components/AppCard';

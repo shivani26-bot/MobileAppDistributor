@@ -5,14 +5,21 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ActivityIndicator, Avatar, Menu} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {logoutUser} from '../redux/features/authLogoutSlice';
-
+import CustomModal from './CustomModal';
 const Header = () => {
   const [visible, setVisible] = useState(false);
   const [token, setToken] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
   const {loading, error} = useSelector(state => state.authLogout);
   const navigation = useNavigation();
-
+  const [modalContent, setModalContent] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    buttonText: '',
+    cancelButtonText: 'Cancel',
+  });
   useEffect(() => {
     const checkToken = async () => {
       const storedToken = await AsyncStorage.getItem('token');
@@ -24,51 +31,89 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logoutUser()).unwrap();
+      const response = await dispatch(logoutUser()).unwrap();
+      console.log(response);
       await AsyncStorage.removeItem('token');
       setToken(null);
       setVisible(false);
+      setModalContent({
+        title: 'Success',
+        message: 'Logged out successfully',
+        buttonText: 'Ok',
+        onConfirm: () => {
+          setModalVisible(false);
+        },
+        cancelButtonText: '',
+      });
+      setModalVisible(true);
       navigation.navigate('Auth');
     } catch (error) {
       console.error('Logout failed:', error);
+      setModalContent({
+        title: 'Error',
+        message: error.message || 'Something went wrong',
+        buttonText: 'Ok',
+        onConfirm: () => {
+          setModalVisible(false);
+        },
+        cancelButtonText: '',
+      });
+      setModalVisible(true);
     }
   };
 
   return (
-    <View style={styles.header}>
-      <View style={styles.iconContainer}>
-        <Image
-          source={require('../asset/images/logo1.png')}
-          style={styles.icon}
-        />
-      </View>
-      <View>
-        {loading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : token ? (
-          <>
-            <TouchableOpacity onPress={() => setVisible(!visible)}>
-              <Avatar.Image
-                size={40}
-                source={require('../asset/images/avatar.png')}
-              />
-            </TouchableOpacity>
-
-            {visible && (
-              <View style={styles.menu}>
-                <Menu.Item
-                  onPress={handleLogout}
-                  title="Logout"
-                  disabled={loading}
+    <>
+      <View style={styles.header}>
+        <View style={styles.iconContainer}>
+          <Image
+            source={require('../asset/images/logo1.png')}
+            style={styles.icon}
+          />
+        </View>
+        <View>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : token ? (
+            <>
+              <TouchableOpacity onPress={() => setVisible(!visible)}>
+                <Avatar.Image
+                  size={40}
+                  source={require('../asset/images/avatar.png')}
                 />
-              </View>
-            )}
-          </>
-        ) : null}
+              </TouchableOpacity>
+
+              {visible && (
+                <View style={styles.menu}>
+                  <Menu.Item
+                    onPress={handleLogout}
+                    title="Logout"
+                    disabled={loading}
+                  />
+                </View>
+              )}
+            </>
+          ) : null}
+        </View>
+
+        {error && <Text style={styles.errorText}>Logout Failed: {error}</Text>}
       </View>
 
-      {error && <Text style={styles.errorText}>Logout Failed: {error}</Text>}
-    </View>
+      {isModalVisible && (
+        <CustomModal
+          visible={isModalVisible}
+          onDismiss={() => setModalVisible(false)}
+          onConfirm={modalContent.onConfirm}
+          title={modalContent.title}
+          message={modalContent.message}
+          buttonText={modalContent.buttonText}
+          buttonStyle={{backgroundColor: '#3676F6', color: 'white'}}
+          buttonTextStyle={{color: 'white'}}
+          cancelButtonText={modalContent.cancelButtonText}
+          cancelButtonStyle={{backgroundColor: '#5D5D60', color: 'white'}}
+        />
+      )}
+    </>
   );
 };
 
